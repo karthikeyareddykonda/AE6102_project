@@ -26,6 +26,23 @@ Hence simulations are the only way . However there exist various methods of simu
 - In case of multiple satellites, can encode all objects dynamic equations in vector form ( all position co-ordinates in a single vector and imagine differential equation in this vector ) and demonstrate simulation performance enhancement by using single core, multi core, GPU.
 
 
+# Theory:
+
+- We will firstly need the equations of motion -
+    - $\vec{v} = \frac{d\vec{x}}{dt}$
+    - $\vec{a} = \frac{d\vec{v}}{dt}$
+    - $\vec{F} = m\cdot\vec{a}$
+
+- Now, lets take a simple case of a satellite orbiting a stationary planet. Using Newton's law of gravity (assume the planet's center is origin) -
+  - $\vec{F} = -G\cdot\frac{m_1 m_2}{r^3}\vec{x}$, where $r$ is the magnitude of position vector.
+
+- When a body is at distance 'r' from the center, its escape velocity is equal to 
+  - $v_{escape} = \sqrt{\frac{2G\cdot{M_{planet}} }{r}}$
+  - So, if the body has a velocity more than this, it is not bounded by the gravitational force of the planet and will continue in a hyperbolic path (when no other forces are present).
+
+
+
+
 
 
 
