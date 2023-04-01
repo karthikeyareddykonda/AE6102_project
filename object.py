@@ -3,6 +3,9 @@ G = 6.67*1e-11
 
 
 def gravity(m1, m2, x1, y1, z1, x2, y2, z2):
+    """
+        Gravity force vector pointing from 2 to 1
+    """
 
     #  resolved gravity ?
 
