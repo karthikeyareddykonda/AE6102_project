@@ -3,6 +3,7 @@ G = 6.67*1e-11
 R = 6.378e6
 M = 5.97e24
 
+
 def gravity(m1, m2, x1, y1, z1, x2, y2, z2):
     """
         Gravity force vector pointing from 2 to 1
@@ -12,9 +13,9 @@ def gravity(m1, m2, x1, y1, z1, x2, y2, z2):
 
     r = ((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)**0.5
     C = G*m1*m2/(r**3)
-    fx = C*(x1-x2)
-    fy = C*(y1-y2)
-    fz = C*(z1-z2)
+    fx = -C*(x1-x2)
+    fy = -C*(y1-y2)
+    fz = -C*(z1-z2)
 
     return fx, fy, fz
 
@@ -51,18 +52,16 @@ class object:
 
         # calculate acceleration of Ob on the current object
 
-        fx,fy,fz = gravity(self.m, ob.m,self.x, self.y, self.z, ob.x, ob.y, ob.z)
+        fx, fy, fz = gravity(self.m, ob.m, self.x, self.y,
+                             self.z, ob.x, ob.y, ob.z)
 
-        return (fx/self.m,fy/self.m,fz/self.m)
-    
-    def update_due_ob(self,dt,ob):
+        return (fx/self.m, fy/self.m, fz/self.m)
 
-        ax,ay,az = self.acc(ob)
-        self.update(dt,ax,ay,az)
+    def update_due_ob(self, dt, ob):
 
+        ax, ay, az = self.acc(ob)
+        self.update(dt, ax, ay, az)
 
     def give_pos(self):
 
-        return (self.x,self.y,self.z)
-
-        
+        return (self.x, self.y, self.z)
