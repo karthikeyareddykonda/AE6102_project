@@ -24,17 +24,18 @@ def gen_framesp(m1,m2,x1,y1,z1,x2,y2,z2,vx,vy,vz,dt,N,frames):
     for i in range(N):
         r = ((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)**0.5
         C = G*m2/(r**3)
-        fx = C*(x1-x2)
-        fy = C*(y1-y2)
-        fz = C*(z1-z2)
-
-        x1 += vx*dt
-        y1 += vy*dt
-        z1 += vz*dt
+        fx = -C*(x1-x2)
+        fy = -C*(y1-y2)
+        fz = -C*(z1-z2)
 
         vx += fx*dt
         vy += fy*dt
         vz += fz*dt
+        x1 += vx*dt
+        y1 += vy*dt
+        z1 += vz*dt
+
+       
 
         frames[i][0] = x1
         frames[i][1] = y1
@@ -57,9 +58,9 @@ class object:
         self.vx = vx
         self.vy = vy
         self.vz = vz
-        nfunc = numba.njit(gen_framesp)
+        self.nfunc = numba.njit(gen_framesp)
         dummy = np.zeros((10,3))
-        nfunc(m,1,1,1,1,0,0,0,1,1,1,1,10,dummy)
+        self.nfunc(m,1,1,1,1,0,0,0,1,1,1,1,10,dummy)
        # gen_framesp(self.m,ob.m,[self.x,self.y,self.z],[ob.x,ob.y,ob.z],[self.vx,self.vy,self.vz],dt,N,frames)
 
     def update(self, dt, ax, ay, az):
@@ -90,11 +91,13 @@ class object:
 
     def get_frames(self,ob,N,dt,opt="pure"):
         frames = np.zeros((N,3))
+        
 
         if(opt == "pure"):
 
             gen_framesp(self.m,ob.m,self.x,self.y,self.z,ob.x,ob.y,ob.z,self.vx,self.vy,self.vz,dt,N,frames)
         else:
+            
             self.nfunc(self.m,ob.m,self.x,self.y,self.z,ob.x,ob.y,ob.z,self.vx,self.vy,self.vz,dt,N,frames)
         return frames
 
@@ -105,10 +108,10 @@ class object:
 def gen_frames(m1,m2,p1,p2,v1,dt,N,frames):
     
     const = G*m2
-    
+    print("called")
     for i in range(N):
         rel_pos = p2-p1
-        acc = (const/(rel_pos@rel_pos.T)**1.5)*p1
+        acc = (const/(rel_pos@rel_pos.T)**1.5)*rel_pos
         v1 = v1 + acc*dt
         p1 = p1 + v1*dt
         frames[i,:] = p1.T
@@ -134,7 +137,7 @@ class nobject:
         #print("vel",self.vel)
 
     def get_frames(self,ob,N,dt):
-
+        
         frames = np.zeros((N,3))
         gen_frames(self.m,ob.m,self.pos,ob.pos,self.vel,dt,N,frames)
         return frames
