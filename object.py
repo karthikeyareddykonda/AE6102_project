@@ -14,7 +14,7 @@ def gravity(m1, m2, x1, y1, z1, x2, y2, z2):
     fy = C*(y1-y2)
     fz = C*(z1-z2)
 
-    return fx, fy, fz
+    return -fx, -fy, -fz
 
 
 def gen_framesp(m1,m2,x1,y1,z1,x2,y2,z2,vx,vy,vz,dt,N,frames):
