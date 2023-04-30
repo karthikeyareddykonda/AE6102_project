@@ -13,9 +13,9 @@ if __name__ == "__main__":
         description="Basic driver for 2 body system"
     )
 
-    parser.add_argument('-M1', type=float,  required=False,default="1",help= "Mass of object")
-    parser.add_argument('-R1', type=float, required=False,default="1" ,help="Radius of obj1")
-    parser.add_argument('-posvec1', type=float,nargs=3,required=False,default=[0,0,0], help="position vector in x y z")
+    parser.add_argument('-M1', type=float,  required=False,default=1.0,help= "Mass of object")
+    parser.add_argument('-R1', type=float, required=False,default=1.0 ,help="Radius of obj1")
+    parser.add_argument('-posvec1', type=float,nargs=3,required=False,default=[1,1.5,0], help="position vector in x y z")
     parser.add_argument('-velocity1', type=float,nargs=3,required=False,default=[0,0,0], help="velocity vector in x y z")
 
     parser.add_argument('-procedure',type=str, required=False,default="other",choices=["pure","numpy","numba"])
@@ -23,9 +23,9 @@ if __name__ == "__main__":
     
 
 
-    parser.add_argument('-M2', type=float,  required=False,default="1",help= "Mass of object")
-    parser.add_argument('-R2', type=float, required=False,default="1" ,help="Radius of obj1")
-    parser.add_argument('-posvec2', type=float,nargs=3,required=False,default=[1,1.5,1], help="position vector in x y z")
+    parser.add_argument('-M2', type=float,  required=False,default=M,help= "Mass of object")
+    parser.add_argument('-R2', type=float, required=False,default=R ,help="Radius of obj1")
+    parser.add_argument('-posvec2', type=float,nargs=3,required=False,default=[0,0,0], help="position vector in x y z")
     parser.add_argument('-velocity2', type=float,nargs=3,required=False,default=[0,0,0], help="velocity vector in x y z")
     
 
@@ -68,7 +68,7 @@ if __name__ == "__main__":
         ob2 = nobject(m = M2,position=np.array(P2),velocity=np.array(V2))
 
 
-    frames = np.zeros((N,6))
+    frames = np.zeros((N,3))
     time_taken = 0
     
     if(proc =="pure"):
@@ -77,11 +77,11 @@ if __name__ == "__main__":
             
         # print(i)
             ob1.update_due_ob(dt,ob2)
-            ob2.update_due_ob(dt,ob1)
+            #ob2.update_due_ob(dt,ob1)
 
                 #Not a good approximation
-            frames[i,:3] = ob1.give_pos()
-            frames[i,3:] = ob2.give_pos()
+            frames[i,:] = ob1.give_pos()
+           # frames[i,3:] = ob2.give_pos()
         t2 = time.perf_counter()
         time_taken = t2-t1
     
@@ -105,7 +105,7 @@ if __name__ == "__main__":
 
     print("Time taken by ",proc, time_taken)
     if out_file is not None:
-        np.savez(out_file,frames)
+        np.save(out_file,frames)
     
 
 
