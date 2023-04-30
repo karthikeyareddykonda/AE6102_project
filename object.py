@@ -108,7 +108,7 @@ class object:
 def gen_frames(m1,m2,p1,p2,v1,dt,N,frames):
     
     const = G*m2
-    print("called")
+    #print("called")
     for i in range(N):
         rel_pos = p2-p1
         acc = (const/(rel_pos@rel_pos.T)**1.5)*rel_pos

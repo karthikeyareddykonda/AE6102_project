@@ -18,7 +18,7 @@ if __name__ == "__main__":
     parser.add_argument('-posvec1', type=float,nargs=3,required=False,default=[1,1.5,0], help="position vector in x y z")
     parser.add_argument('-velocity1', type=float,nargs=3,required=False,default=[0,0,0], help="velocity vector in x y z")
 
-    parser.add_argument('-procedure',type=str, required=False,default="other",choices=["pure","numpy","numba"])
+    parser.add_argument('-procedure',type=str, required=False,default="numba",choices=["pure","numpy","numba"])
     
     
 
@@ -95,7 +95,7 @@ if __name__ == "__main__":
     else:
         t1 = time.perf_counter()
 
-        frames = ob1.get_frames(ob=ob2,N=N,dt=dt)
+        frames = ob1.get_frames(ob=ob2,N=N,dt=dt,opt="numba")
         
         t2 = time.perf_counter()
         time_taken = t2-t1
@@ -103,7 +103,7 @@ if __name__ == "__main__":
 
     
 
-    print("Time taken by ",proc, time_taken)
+    print(time_taken)
     if out_file is not None:
         np.save(out_file,frames)
     
