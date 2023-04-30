@@ -1,0 +1,26 @@
+# API between animation and computation
+
+Driver gives me
+
+Earth 0,0,0
+
+Single object case
+n -> frames
+n x 3 numpy array
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
