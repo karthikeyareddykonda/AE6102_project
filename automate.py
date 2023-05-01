@@ -4,6 +4,7 @@ from object import R,M,G
 import matplotlib.pyplot as plt
 from math import sqrt
 
+
 class Orbit2(Problem):
     def get_name(self):
         return 'Orbit2'
@@ -31,6 +32,9 @@ class Orbit2(Problem):
                 )
             )
         return cmd_list
+    
+    def run(self):
+       self.make_output_dir()
 class Orbit(Problem):
 
     def get_name(self):
@@ -45,16 +49,7 @@ class Orbit(Problem):
 
         cmd_list = []
         python_path ='/usr/bin/python3'
-        for i in range(N):
-            v2 = [str(velocity2[i][0]), str(velocity2[i][1]), str(velocity2[i][2])]
-            out = self.input_path('velocity_'+str(i),'data')
-            cmd_list.append(
-                ('velocity_'+str(i), python_path+' driver_2.py'+
-                  ' -velocity2 '+ v2[0]+' '+v2[1]+' '+ v2[2]+
-                  ' -proc numba'+
-                   ' -o '+ out,
-                   None)
-            )
+        
 
         cmd_list2 =[]
         procedure = ["pure","numpy","numba"]
@@ -107,12 +102,69 @@ class Orbit(Problem):
         plt.savefig(self.output_path('perfomance_compare.png'))
         plt.close()
 
+class Orbit3(Problem):
+
+    def get_name(self):
+        return 'Orbit3'
+    
+    def get_commands(self):
+        
+        dt = 60
+        N = [1,2,4,8,16]
+        cmd_list = []
+        procedure =['numpy','pure']
+        python_path = '/usr/bin/python3'
+        for proc in procedure:
+            for n in N:
+                out = self.input_path(proc+"_"+str(n),'data')
+                
+                cmd_list.append((
+                    proc+"_"+str(n),
+                    python_path+' driver_3.py'+
+                    ' -N '+str(n)+
+                    ' -proc '+proc+
+                    ' -dt '+str(dt)+
+                    ' -o '+out,
+                    None
+
+                ))
+        return cmd_list
+            
+
+    def run(self):
+        self.make_output_dir()
+        dt = 200
+        N = [1,2,4,8,16]
+        cmd_list = []
+        procedure =['numpy','pure']
+        python_path = '/usr/bin/python3'
+        y = [[],[]]
+
+        for i,proc in enumerate(procedure):
+            for n in N:
+                stdout = self.input_path(proc+"_"+str(n),'stdout.txt')
+                with open(stdout) as f:
+                    data = float(f.read().split()[0])
+                    y[i].append(data)
+        
+        plt.plot(N,y[0],label="numpy")
+        plt.plot(N,y[1],label="pure")
+        plt.title("Time taken vs No of  objects")
+        plt.xlabel("No of objects")
+        plt.ylabel("time taken")
+        plt.legend(["numpy","pure"])
+        plt.savefig(self.output_path('perfomance_compare_2.png'))
+        plt.close()
+
+
+
+
 if __name__ == '__main__':
 
     automator = Automator(
         simulation_dir = 'outputs',
         output_dir = 'manuscript/figures',
-        all_problems = [Orbit2]
+        all_problems = [Orbit3,Orbit2,Orbit]
     )
     automator.run()
 

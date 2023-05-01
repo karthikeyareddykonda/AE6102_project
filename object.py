@@ -1,5 +1,6 @@
 import numpy as np
 import numba
+from math import sqrt
 G = 6.67*1e-11
 R = 6.378e6
 M = 5.97e24
@@ -170,3 +171,103 @@ class nobject:
     def give_pos(self):
 
         return self.pos.T
+    
+class Multi_object:
+    Nobj = None
+    pos = None
+    vel = None
+    m = None
+
+    def __init__(self,Nobj,d=2*R):
+        np.random.seed(0)
+        self.Nobj = Nobj
+        self.pos = np.zeros((Nobj,3))
+        
+        self.vel = np.zeros((Nobj,3))
+        m = np.ones((Nobj,1))
+        theta = np.random.uniform(0,2*3.14,(Nobj,1))
+        phi =  np.random.uniform(0,2*3.14,(Nobj,1))
+        phi = 0
+        self.pos[:,0] = d*np.cos(theta).T
+        self.pos[:,1] = (d*np.sin(theta)*np.cos(phi)).T
+        self.pos[:,2] = (d*np.sin(theta)*np.sin(phi)).T
+        theta = np.random.uniform(0,3.14,(Nobj,1))
+        phi = np.random.uniform(0,2*3.14,(Nobj,1))
+        speeds = np.random.uniform(sqrt(G*M/d),sqrt(2*G*M/d),(Nobj,1))
+        
+        
+        self.vel[:,0] = (speeds*np.cos(theta)).T
+        self.vel[:,1] = (speeds*np.sin(theta)*np.cos(phi)).T
+        self.vel[:,2] = (speeds*np.sin(theta)*np.cos(phi)).T
+        #self.vel[:,2] = sqrt(G*M/d)
+
+
+    
+    def get_frames_pure(self,obj2,dt,N):
+        # obj2 should be default earth
+        x2,y2,z2 = obj2.give_pos()
+        m2 = obj2.m
+        nobj = self.Nobj
+        cur_pos = self.pos
+        cur_vel = self.vel
+        frames = np.zeros((N,3,nobj))
+        for f in range(N):
+            for i in range(nobj):
+                # calculate force, acceleration
+                # update velocity
+                # update position
+                
+                if(x2 is None):
+                    print("Trouble")
+                if(cur_pos is None):
+                    print("Trouble")
+
+                r = ((cur_pos[i][0]-x2)**2 + (cur_pos[i][1]-y2)**2 + (cur_pos[i][2]-z2)**2)**0.5
+                C = G*m2/(r**3)
+                fx = -C*(cur_pos[i][0]-x2)
+                fy = -C*(cur_pos[i][1]-y2)
+                fz = -C*(cur_pos[i][2]-z2)
+
+                cur_pos[i][0] += cur_vel[i][0]*dt
+                cur_pos[i][1] += cur_vel[i][1]*dt
+                cur_pos[i][2] += cur_vel[i][2]*dt
+                cur_vel[i][0] += fx*dt
+                cur_vel[i][1] += fy*dt
+                cur_vel[i][2] += fz*dt
+                frames[f,:,i] = cur_pos[i,:]
+        
+
+            
+        return frames
+    
+    def get_frames_numpy(self,obj2,dt,N):
+        x2,y2,z2 = obj2.give_pos()
+        p0 = np.array(obj2.give_pos())
+        m2 = obj2.m
+        nobj = self.Nobj
+        cur_pos = self.pos
+        cur_vel = self.vel
+        frames = np.zeros((N,3,nobj))
+
+        for f in range(N):
+            tp = cur_pos-p0
+            tp2 = tp*tp 
+            r = np.sum(tp2,axis=1)**1.5
+            C = G*m2/r
+            acc = -tp* np.reshape(C,(nobj,1))
+            cur_pos += cur_vel*dt
+            cur_vel += acc*dt
+            frames[f,:,:] = cur_pos.T
+
+        
+        return frames
+
+
+
+
+
+
+
+
+
+    
